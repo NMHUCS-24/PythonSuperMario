@@ -53,6 +53,8 @@ class Menu(tools.State):
         self.setup_background()
         self.setup_player()
         self.setup_cursor()
+
+        self.timer_start = current_time
         
     def setup_background(self):
         """Loads and scales the background image."""
@@ -116,6 +118,11 @@ class Menu(tools.State):
         surface.blit(self.player_image, self.player_rect)
         surface.blit(self.cursor.image, self.cursor.rect)
         self.overhead_info.draw(surface)
+
+        elapsed_time = current_time - self.timer_start
+        if elapsed_time >= 1000:
+            self.done = True
+            self.next = c.LOAD_SCREEN
 
     def update_cursor(self, keys):
         """Updates the cursor position based on user input.
