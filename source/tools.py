@@ -13,7 +13,24 @@ keybinding = {
 }
 
 class State():
+    """
+    This class represents a generic game state. A game state is a specific situation or screen 
+    in the game (e.g., main menu, level, game over). Different states can handle their own 
+    logic, update visuals, and respond to user input.
+
+    Attributes:
+        start_time (float): The time the state was entered.
+        current_time (float): The current game time.
+        done (bool): Flag indicating if the state is finished and needs to be transitioned from.
+        next (str or State): The next state to transition to after the current state is finished.
+        persist (dict): A dictionary storing persistent data that can be carried across states.
+    """
+
     def __init__(self):
+        """
+        Initializes the state with default values.
+        """
+
         self.start_time = 0.0
         self.current_time = 0.0
         self.done = False
@@ -22,15 +39,42 @@ class State():
     
     @abstractmethod
     def startup(self, current_time, persist):
-        '''abstract method'''
+        """
+        This is an abstract method that must be implemented by subclasses. 
+        The `startup` method is called when the state is first entered. 
+        It is responsible for initializing the state's specific logic and data.
+
+        Args:
+            current_time (float): The current game time.
+            persist (dict): A dictionary containing persistent data from previous states.
+        """
 
     def cleanup(self):
+        """
+        This method is called when the state is transitioned from. 
+        It can be used to clean up any resources or perform final actions for the state.
+
+        Returns:
+            dict: The persistent data that should be carried over to the next state.
+        """
+
         self.done = False
         return self.persist
     
     @abstractmethod
     def update(sefl, surface, keys, current_time):
-        '''abstract method'''
+        """
+        This is an abstract method that must be implemented by subclasses. 
+        The `update` method is called on every game loop iteration. 
+        It is responsible for handling the state's logic, updating visuals on the screen, 
+        and responding to user input (keys).
+
+        Args:
+            surface (pygame.Surface): The game's surface to draw on.
+            keys (list): A list of currently pressed keys.
+            current_time (float): The current game time.
+        """
+
 
 class Control():
     def __init__(self):

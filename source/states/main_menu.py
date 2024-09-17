@@ -1,5 +1,10 @@
 __author__ = 'marble_xu'
 
+"""
+This module defines the `Menu` class, which represents the main menu screen in the game. 
+The main menu allows players to select their character (Mario or Luigi) and start a new game.
+"""
+
 import pygame as pg
 from .. import tools
 from .. import setup
@@ -7,6 +12,20 @@ from .. import constants as c
 from .. components import info
 
 class Menu(tools.State):
+    """
+    Represents the main menu screen.
+
+    Attributes:
+        game_info (dict): A dictionary storing game information.
+        overhead_info (Info): An `Info` object for displaying game information.
+        background (pygame.Surface): The background image for the main menu.
+        background_rect (pygame.Rect): The rectangle representing the background image's dimensions.
+        viewport (pygame.Rect): The visible area of the game screen.
+        image_dict (dict): A dictionary storing images used in the main menu.
+        player_list (list): A list of player images.
+        player_index (int): The current index of the selected player.
+        cursor (pygame.sprite.Sprite): The cursor sprite.
+    """
     def __init__(self):
         tools.State.__init__(self)
         persist = {c.COIN_TOTAL: 0,
@@ -19,6 +38,13 @@ class Menu(tools.State):
         self.startup(0.0, persist)
     
     def startup(self, current_time, persist):
+        """
+        Initializes the main menu.
+
+        Args:
+            current_time (float): The current game time.
+            persist (dict): A dictionary containing persistent game data.
+        """
         self.next = c.LOAD_SCREEN
         self.persist = persist
         self.game_info = persist
@@ -29,6 +55,8 @@ class Menu(tools.State):
         self.setup_cursor()
         
     def setup_background(self):
+        """Loads and scales the background image."""
+
         self.background = setup.GFX['level_1']
         self.background_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,
@@ -44,6 +72,8 @@ class Menu(tools.State):
         self.image_dict['GAME_NAME_BOX'] = (image, rect)
 
     def setup_player(self):
+        """Sets up the player images and initial selection."""
+
         self.player_list = []
         player_rect_info = [(178, 32, 12, 16), (178, 128, 12, 16)]
         for rect in player_rect_info:
@@ -55,6 +85,8 @@ class Menu(tools.State):
         self.player_index = 0
 
     def setup_cursor(self):
+        """Creates the cursor sprite and positions it."""
+
         self.cursor = pg.sprite.Sprite()
         self.cursor.image = tools.get_image(setup.GFX[c.ITEM_SHEET], 24, 160, 8, 8, c.BLACK, 3)
         rect = self.cursor.image.get_rect()
@@ -63,6 +95,14 @@ class Menu(tools.State):
         self.cursor.state = c.PLAYER1
 
     def update(self, surface, keys, current_time):
+        """Updates the main menu.
+
+        Args:
+            surface (pygame.Surface): The game's surface.
+            keys (list): A list of pressed keys.
+            current_time (float): The current game time.
+        """
+
         self.current_time = current_time
         self.game_info[c.CURRENT_TIME] = self.current_time
         self.player_image = self.player_list[self.player_index][0]
@@ -78,6 +118,12 @@ class Menu(tools.State):
         self.overhead_info.draw(surface)
 
     def update_cursor(self, keys):
+        """Updates the cursor position based on user input.
+
+        Args:
+            keys (list): A list of pressed keys.
+        """
+
         if self.cursor.state == c.PLAYER1:
             self.cursor.rect.y = 358
             if keys[pg.K_DOWN]:
@@ -95,6 +141,8 @@ class Menu(tools.State):
             self.done = True
     
     def reset_game_info(self):
+        """Resets the game information to default values."""
+
         self.game_info[c.COIN_TOTAL] = 0
         self.game_info[c.SCORE] = 0
         self.game_info[c.LIVES] = 3
