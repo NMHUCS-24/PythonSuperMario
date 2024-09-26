@@ -27,10 +27,10 @@ def create_enemy(item, level, surface):
         range_start = range_end = 0
 
     # Instantiate the correct enemy type based on the 'type' key in the item dictionary
-    if item['type'] == c.ENEMY_TYPE_GOOMBA:
-        sprite = Goomba(item['x'], item['y'], dir, color, in_range, range_start, range_end)
-    elif item['type'] == c.ENEMY_TYPE_KOOPA:
+    if item['type'] == c.ENEMY_TYPE_FLY_KOOPA:
         sprite = Koopa(item['x'], item['y'], dir, color, in_range, range_start, range_end)
+    elif item['type'] == c.ENEMY_TYPE_GOOMBA:
+        sprite = Goomba(item['x'], item['y'], dir, color, in_range, range_start, range_end)
     elif item['type'] == c.ENEMY_TYPE_FLY_KOOPA:
         isVertical = False if item['is_vertical'] == 0 else True
         sprite = FlyKoopa(item['x'], item['y'], dir, color, in_range, range_start, range_end, isVertical)
