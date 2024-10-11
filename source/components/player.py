@@ -16,6 +16,7 @@ class Player(pg.sprite.Sprite):
         self.setup_state()
         self.setup_speed()
         self.load_images()
+        self.auto_move = False                           #instance for automatic movement
         
         if c.DEBUG:
             self.right_frames = self.big_fire_frames[0]
@@ -131,6 +132,10 @@ class Player(pg.sprite.Sprite):
 
     def update(self, keys, game_info, fire_group):
         self.current_time = game_info[c.CURRENT_TIME]
+
+        if self.auto_move is True:  # Check if automatic movement is enabled
+             self.state = c.WALK_AUTO # Uses the WALK_AUTO from the constants.py file
+            
         self.handle_state(keys, fire_group)
         self.check_if_hurt_invincible()
         self.check_if_invincible()
@@ -282,13 +287,13 @@ class Player(pg.sprite.Sprite):
                     self.x_vel -= self.x_accel
                 else:
                     self.x_vel = 0
-                    self.state = c.STAND
+                    self.state = c.WALK_AUTO  #c.stand is original, changed to WALK_AUTO state when the right key is pressed
             else:
                 if self.x_vel < 0:
                     self.x_vel += self.x_accel
                 else:
                     self.x_vel = 0
-                    self.state = c.STAND
+                    self.state = c.WALK_AUTO  #c.stand is original
 
     def jumping(self, keys, fire_group):
         """ y_vel value: positive is down, negative is up """
