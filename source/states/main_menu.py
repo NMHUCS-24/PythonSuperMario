@@ -11,6 +11,9 @@ from .. import setup
 from .. import constants as c
 from .. components import info
 
+# Initial configuration settings for the game to start automatically 
+AUTO_START = False
+
 class Menu(tools.State):
     """
     Represents the main menu screen.
@@ -57,21 +60,49 @@ class Menu(tools.State):
         self.timer_start = current_time
         
     def setup_background(self):
-        """Loads and scales the background image."""
-
+        """Loads and scales the background image and prepares the authors' names."""
+        
+        # Load and scale the background image
         self.background = setup.GFX['level_1']
         self.background_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,
-                                    (int(self.background_rect.width*c.BACKGROUND_MULTIPLER),
-                                    int(self.background_rect.height*c.BACKGROUND_MULTIPLER)))
+                                            (int(self.background_rect.width * c.BACKGROUND_MULTIPLER),
+                                            int(self.background_rect.height * c.BACKGROUND_MULTIPLER)))
 
+        # Set up the viewport
         self.viewport = setup.SCREEN.get_rect(bottom=setup.SCREEN_RECT.bottom)
+        
+        # Load the game title image
         self.image_dict = {}
         image = tools.get_image(setup.GFX['title_screen'], 1, 60, 176, 88,
-                            (255, 0, 220), c.SIZE_MULTIPLIER)
+                                (255, 0, 220), c.SIZE_MULTIPLIER)
         rect = image.get_rect()
         rect.x, rect.y = (170, 100)
         self.image_dict['GAME_NAME_BOX'] = (image, rect)
+        
+        # Set up font for authors' names
+        font = pg.font.SysFont('Arial', 24, bold=True)
+        authors_text = "Created by: Austin, Inez, Jakwon, Tobi"
+        
+        # Render the text in white
+        self.authors_image = font.render(authors_text, True, (255, 255, 255))  # White text for visibility
+        self.authors_rect = self.authors_image.get_rect()
+        
+        # Position the text near the bottom center of the screen
+        self.authors_rect.center = (self.viewport.centerx, self.viewport.bottom - 265)  # Adjust position
+
+
+    def draw(self, screen):
+        """Draws the background and other elements, including authors' names."""
+        
+        # Draw the background
+        screen.blit(self.background, self.viewport)
+        
+        # Draw the game title image
+        screen.blit(self.image_dict['GAME_NAME_BOX'][0], self.image_dict['GAME_NAME_BOX'][1])
+        
+        # Draw the authors' names
+        screen.blit(self.authors_image, self.authors_rect)
 
     def setup_player(self):
         """Sets up the player images and initial selection."""
@@ -97,13 +128,7 @@ class Menu(tools.State):
         self.cursor.state = c.PLAYER1
 
     def update(self, surface, keys, current_time):
-        """Updates the main menu.
-
-        Args:
-            surface (pygame.Surface): The game's surface.
-            keys (list): A list of pressed keys.
-            current_time (float): The current game time.
-        """
+        """Updates the main menu and renders all elements including authors' names."""
 
         self.current_time = current_time
         self.game_info[c.CURRENT_TIME] = self.current_time
@@ -112,17 +137,32 @@ class Menu(tools.State):
         self.update_cursor(keys)
         self.overhead_info.update(self.game_info)
 
+        # Draw the background first
         surface.blit(self.background, self.viewport, self.viewport)
-        surface.blit(self.image_dict['GAME_NAME_BOX'][0],
-                     self.image_dict['GAME_NAME_BOX'][1])
+        
+        # Draw the game title image
+        surface.blit(self.image_dict['GAME_NAME_BOX'][0], self.image_dict['GAME_NAME_BOX'][1])
+        
+        # Draw the selected player
         surface.blit(self.player_image, self.player_rect)
+        
+        # Draw the cursor
         surface.blit(self.cursor.image, self.cursor.rect)
+        
+        # Draw the overhead info
         self.overhead_info.draw(surface)
+        
+        # Draw the authors' names after everything else
+        surface.blit(self.authors_image, self.authors_rect)
 
+        # Timer for moving to the next screen
         elapsed_time = current_time - self.timer_start
-        if elapsed_time >= 1000:
+        if AUTO_START and elapsed_time >= 1000:
             self.done = True
             self.next = c.LOAD_SCREEN
+        
+            
+
 
     def update_cursor(self, keys):
         """Updates the cursor position based on user input.
